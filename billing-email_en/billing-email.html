@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<#setting locale="en_GB">
+<#setting locale="it_IT">
+<!--
+    Template for event billing-email triggered when a trip is billed.
+    Available variables:
+     * ${FirstName}
+     * ${LastName}
+     * ...
+    
+    good practices:
+    * use hosted image rather then embeded (some email client doesn't display embeded images)
+    * add CSS style on tag level, not on BODY or HTML that will be lost when displayed by email client)
+    * keep <#setting locale="en_GB"> at the biggining of the document to be able to format dates.
+    
+    -->
+<html lang="it">
+    <head>
+        
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <style>
+        html, body {width: 100%; min-width: 600px}
+        ol { padding-left: 1em; }
+        a:link { color: #39ff14; text-decoration: underline;}
+        a:visited { color: #39ff14; text-decoration: underline;}
+        a:hover { color: #39ff14; text-decoration: none;}
+        a:active { color: #39ff14; text-decoration: none;}
+    </style>
+    <body>
+    <div style="width: 600px; margin: 0 auto; background-color: white; font-family: Arial, Helvetica, sans-serif">
+        <img alt="your logo" src="http://antudomobility.com/static/images/logo.png" width="600" />
+        <h2 style="text-align:left">Thanks for driving with us!<br /></h2>
+        <hr style="border: 1px solid #39ff14;"/>        
+        <br />        
+        <table style="width: 600px;margin-left: auto;margin-right: auto;">
+            <tr>
+                <td colspan="2" style="font-weight: normal; font-size:16px;text-align: left">
+                    Hey <b><#if FirstName??>${FirstName}</#if> <#if LastName??>${LastName}</#if></b>,<br />
+                    <br />
+                    Here is the summary of your trip:<br />
+                    <br />
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: normal; font-size:16px;text-align: left;white-space: nowrap"><span style="color: #39ff14;">&bull;&nbsp;&nbsp;&nbsp;</span>Start date of reservation:</td>
+                <td style="font-weight: normal; font-size:16px;text-align: right;white-space: nowrap">${trip_date?datetime("dd/MM/yy HH:mm")?string("EEEE dd MMM yyyy")}</td>
+            </tr>   
+            <tr>
+                <td style="font-weight: normal; font-size:16px;text-align: left;white-space: nowrap"><span style="color: #39ff14;">&bull;&nbsp;&nbsp;&nbsp;</span>Trip duration:</td>
+                <td style="font-weight: normal; font-size:16px;text-align: right">${TripDuration} min </td>
+            </tr>                
+            <tr>
+                <td style="font-weight: normal; font-size:16px;text-align: left;white-space: nowrap"><span style="color: #39ff14;">&bull;&nbsp;&nbsp;&nbsp;</span>Total distance:</td>
+                <td style="font-weight: normal; font-size:16px;text-align: right">${TripDistance} km </td>
+            </tr>        
+            <tr>
+                <td style="font-weight: normal; font-size:16px;text-align: left;white-space: nowrap"><span style="color: #39ff14;">&bull;&nbsp;&nbsp;&nbsp;</span>Total cost:</td>
+                <td style="font-weight: normal; font-size:16px;text-align: right">&nbsp;</td>
+            </tr>
+            <tr>
+                <td style="font-weight: normal; font-size:16px;text-align: right;white-space: nowrap">Price excl. vat.</td>
+                <td style="font-weight: normal; font-size:16px;text-align: right">${TripPriceHt} €</td>
+            </tr>
+            <tr>
+                <td style="font-weight: normal; font-size:16px;text-align: right;white-space: nowrap">vat.</td>
+                <td style="font-weight: normal; font-size:16px;text-align: right">${TripTaxAmount} €</td>
+            </tr> 
+            <tr>
+                <td style="font-weight: normal; font-size:16px;text-align: right;white-space: nowrap">Price incl. vat.</td>
+                <td style="font-weight: normal; font-size:16px;text-align: right">${TripPriceTTC} €</td>
+            </tr>
+        </table>
+        <br />
+        See you soon, now you are part of the Antudo ecosystem.<br />
+		<br />
+		Antudo wishes you the best!  <br/>
+        <hr style="border: 1px solid #39ff14;"/>        
+        <p style="font-size:10pt">If you’ve got questions, we’re here to help.<br />
+            Contact us at:<br />
+            <a href="mailtp:customers@antudomobility">customers@antudomobility</a>
+        </p>
+    </div>
+    </body>
+</html>
