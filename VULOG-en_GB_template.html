@@ -1,0 +1,447 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Antudo invoice</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style>
+        /*
+            CSS for PAGE
+        */
+        @page {
+            size: A4;
+            margin: 15mm 15mm 10mm 15mm;
+
+            @bottom-left {
+                content: element(footer);
+            }
+
+            @bottom-right {
+                content: element(footerR);
+            }
+        }
+
+        @font-face {
+            font-family: "Vulog";
+            src: url(https://mobile-asset-resources.vulog.center/ALL/MyriadPro-Cond.ttf);
+            font-weight: normal;
+            font-style: normal;
+            -fs-pdf-font-embed: embed;
+            -fs-pdf-font-encoding: Identity-H;
+        }
+
+        @font-face {
+            font-family: "Vulog";
+            src: url(https://mobile-asset-resources.vulog.center/ALL/MyriadPro-Bold.ttf);
+            font-weight: bold;
+            font-style: normal;
+            -fs-pdf-font-embed: embed;
+            -fs-pdf-font-encoding: Identity-H;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: Vulog;
+            color: #5c5c5c;
+        }
+
+        #header,
+        #customer,
+        .trip>.detail {
+            position: relative;
+        }
+
+        #header>div,
+        #customer>div,
+        .trip>.detail>div {
+            vertical-align: top;
+            font-size: 7pt;
+        }
+
+        #logo,
+        #customer-info,
+        .trip>.detail>.trip-detail {
+            width: 108mm;
+        }
+
+        #logo img {
+            width: 100mm;
+        }
+
+        #header {
+            height: 42mm;
+        }
+
+        #info1 {
+            width: 50mm;
+            line-height: 150%;
+            position: absolute;
+            right: 50mm;
+            top: 0;
+        }
+
+        #info2 {
+            width: 50mm;
+            line-height: 150%;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+        #customer {
+            height: 54mm;
+        }
+
+        #customer-info,
+        .trip>.detail>.trip-detail {
+            padding-right: 5mm;
+        }
+
+        #customer-intro,
+        .trip>.detail>.invoice-detail {
+            width: 100mm;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+        #customer-intro {
+            top: -8px;
+        }
+
+        #customer-info .header,
+        #customer-intro .header {
+            background-color: #999999;
+            height: 1px;
+            margin-top: 8px;
+            margin-bottom: 14pt;
+        }
+
+        #customer-info .header>span,
+        #customer-intro .header>span {
+            background-color: #ffffff;
+            font-size: 10pt;
+            position: relative;
+            top: -8px;
+            padding-right: 2mm;
+        }
+
+        #customer-intro .header>span {
+            top: -4px;
+        }
+
+        #customer-info .info {
+            font-size: 8pt;
+            line-height: 150%;
+        }
+
+        #customer-intro .intro {
+            font-size: 18pt;
+        }
+
+        .driver {
+            padding: 0 0 4mm 2mm;
+            font-size: 8pt;
+            border-bottom: 1px solid #999999;
+            margin-bottom: 11pt;
+            width: 179mm;
+        }
+
+        .trip .detail .header {
+            padding: 1.5mm 2mm 1.5mm 2mm;
+            background-color: #f0f0f0;
+            font-size: 8pt;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .trip .detail .content {
+            padding: 1.5mm 2mm 1.5mm 2mm;
+            font-size: 0.1mm;
+        }
+
+        .trip .detail .trip-detail .header span {
+            position: absolute;
+            left: 34mm;
+        }
+
+        .trip .detail .content .destination {
+            width: 32mm;
+        }
+
+        .trip .detail .content>div {
+            font-size: 8pt;
+            vertical-align: top;
+            display: inline-block;
+        }
+
+        .trip .detail .content .destination {
+            padding-right: 2mm;
+        }
+
+        .trip .detail .destination .title {
+            font-weight: bold;
+            text-decoration: underline;
+            display: inline-block;
+            padding-bottom: 2.5mm;
+        }
+
+        .trip .detail .destination>div {
+            margin-bottom: 2.5mm;
+        }
+
+        .trip .detail .detailed {
+            width: 38mm;
+        }
+
+        .trip .detail .detailed .row {
+            font-weight: bold;
+            margin-bottom: 3mm;
+        }
+
+        .trip .detail .detailed .row>span {
+            font-weight: normal;
+            float: right;
+        }
+
+        .trip .invoice-detail .right {
+            float: right;
+        }
+
+        .trip .invoice-detail .net-amount {
+            display: inline-block;
+            text-align: right;
+            width: 18mm;
+            position: absolute;
+            right: 0;
+        }
+
+        .trip .invoice-detail .header .net-amount,
+        .trip .invoice-detail .footer .net-amount {
+            right: 2mm;
+        }
+
+        .trip .invoice-detail .tax {
+            display: inline-block;
+            text-align: right;
+            width: 18mm;
+            position: absolute;
+            right: 19mm;
+        }
+
+        .trip .invoice-detail .header .tax {
+            right: 22mm;
+        }
+
+        .trip .invoice-detail .percent {
+            display: inline-block;
+            text-align: right;
+            width: 11mm;
+            position: absolute;
+            right: 38mm;
+        }
+
+        .trip .invoice-detail .tax-name {
+            display: inline-block;
+            width: 18mm;
+            position: absolute;
+            right: 50mm;
+        }
+
+        .trip .invoice-detail .row {
+            font-size: 8pt;
+            margin: 2.5mm 2mm 2.5mm 2mm;
+            position: relative;
+        }
+
+        .separator {
+            height: 1px;
+            background-color: #999999;
+            margin: 5mm 0;
+        }
+
+        .trip .invoice-detail .row.bold {
+            font-weight: bold;
+        }
+
+        .invoice-detail .footer {
+            background-color: #4a4a4a;
+            color: #fff;
+            font-weight: bold;
+            padding: 1.5mm 2mm 1.5mm 2mm;
+            font-size: 9pt;
+            position: relative;
+        }
+
+        .footer span {
+            color: #fff;
+            top: 1.5mm;
+        }
+
+        #footer {
+            font-family: Vulog;
+            font-size: 6pt;
+            color: #5c5c5c;
+            position: running(footer);
+        }
+
+        #page {
+            font-family: Vulog;
+            font-size: 6pt;
+            color: #5c5c5c;
+        }
+
+        #number-page {
+            font-family: Vulog;
+            font-size: 6pt;
+            color: #5c5c5c;
+        }
+
+        #footer-right {
+            font-family: Vulog;
+            font-size: 6pt;
+            color: #5c5c5c;
+            position: running(footerR);
+        }
+    </style>
+</head>
+
+<body th:inline="text">
+    <div id="header">
+        <div id="logo">
+            <img
+                src="http://antudomobility.com/static/images/Logo_bandiera.png" />
+        </div>
+        <div id="info1">
+            <strong>Contatti</strong><br />
+            Via Failla 39 Ragusa Italia<br />
+            customers@antudomobility.com
+
+            
+        </div>
+        <div id="info2">
+            <strong>Informazioni</strong><br />
+           P.Iva 01747370888
+        </div>
+    </div>
+
+    <div id="customer">
+        <div id="customer-info">
+            <div class="header"><span><strong>Date : </strong><th:block th:with="sdf = ${new java.text.SimpleDateFormat('dd/MM/yy')}">[[${#dates.format(sdf.parse(invoice_invoiceDate), 'MM/dd/YYYY')}]]</th:block></span></div>
+            <div class="info">
+                <strong>Account : </strong>[[${user_name}]]<br />
+                <strong>Nome : </strong>[[${user_full_name}]]<br />
+                <strong>Email : </strong>[[${user_email}]]<br />
+                <strong>Indirizzo : </strong>[[${billing_address}]]<br />
+            </div>
+        </div>
+        <div id="customer-intro">
+            <div class="header"><span><strong>Invoice : </strong>[[${invoice_id}]]</span></div>
+            <div class="intro">
+                <strong>Ciao [[${user_first_name}]],</strong> Grazie per aver utilizzato i servizi Antudo per il tuo viaggio.
+            </div>
+        </div>
+    </div>
+
+    <div class="trip">
+        <div class="driver">
+        </div>
+        <div class="detail">
+            <div class="trip-detail" th:if="${invoice_type} == 'trip'">
+                <div class="header">Data<span>Dettagli viaggio</span></div>
+                <div class="content">
+                    <div class="destination">
+                        <div class="from"><span class="title">Da
+                                :</span><br />[[${trip_start_address}]]<br /><th:block 
+                                th:with="sdf = ${new java.text.SimpleDateFormat('dd/MM/yy HH:mm')}">[[${#dates.format(sdf.parse(trip_start_date), 'MM/dd/YYYY hh:mm a')}]]</th:block></div>
+                        <div class="to"><span class="title">A
+                                :</span><br />[[${trip_end_address}]]<br /><th:block 
+                                th:with="sdf = ${new java.text.SimpleDateFormat('dd/MM/yy HH:mm')}">[[${#dates.format(sdf.parse(trip_end_date), 'MM/dd/YYYY hh:mm a')}]]</th:block></div>
+                    </div>
+                    <div class="detailed">
+                        <div class="row"><span>[[${trip_distance}]] km</span>Distanza percorsa</div>
+                        <div class="row"><span>[[${trip_duration}]] min</span>Durata viaggio</div>
+                        <div class="row"><span>[[${trip_driving_duration}]] min</span>Tempo alla guida</div>
+                        <div class="row"><span>[[${trip_pause_duration}]] min</span>Tempo in sosta</div>
+                        <div class="row"><span>[[${trip_booking_duration}]] min</span>Durata prenotazione</div>
+                    </div>
+                </div>
+            </div>
+            <div class="invoice-detail" th:style="${invoice_type} == 'trip' ? '' : 'width:179mm'">
+                <div class="header">Fattura
+                    Stato<span class="tax">Tasse</span><span class="net-amount">escluse Tasse</span></div>
+                <div class="row" th:if="${invoice_type} == 'trip'">Costo del viaggio
+                    <span class="tax-name" th:unless="${trip_tax_name} == '' or ${#strings.isEmpty(trip_tax_name)}">[[${trip_tax_name}]]</span><span 
+					class="percent">[[${#numbers.formatDecimal(trip_tax_rate,1,'COMMA',1,'POINT')}]]
+                    %</span><span class="tax">[[${#numbers.formatDecimal(trip_total_tax,1,'COMMA',2,'POINT')}]] €</span><span
+                    class="net-amount">[[${#numbers.formatDecimal(trip_total_without_tax,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row" th:unless="${billing_group_net_discount} == '0' or ${#strings.isEmpty(billing_group_net_discount)}">[[${billing_group_name}]] 
+					(- [[${#numbers.formatDecimal(billing_group_discount,1,'COMMA',1,'POINT')}]] %)<span 
+					class="tax">- [[${#numbers.formatDecimal(billing_group_tax_discount,1,'COMMA',2,'POINT')}]] €</span><span 
+					class="net-amount">- [[${#numbers.formatDecimal(billing_group_net_discount,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row" th:unless="${without_tax_unlock_fee} == '0' or ${#strings.isEmpty(without_tax_unlock_fee)}">Sblocco<span 
+					class="tax-name" th:unless="${trip_tax_name} == '' or ${#strings.isEmpty(trip_tax_name)}">[[${trip_tax_name}]]</span><span 
+					class="percent">[[${#numbers.formatDecimal(trip_tax_rate,1,'COMMA',1,'POINT')}]]
+                    %</span><span class="tax">[[${#numbers.formatDecimal(tax_unlock_fee,1,'COMMA',2,'POINT')}]] €</span><span 
+					class="net-amount">[[${#numbers.formatDecimal(without_tax_unlock_fee,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row" th:unless="${trip_system_credit} == '0' or ${#strings.isEmpty(trip_system_credit)}">Credito<span 
+					class="tax-name" th:unless="${trip_tax_name} == '' or ${#strings.isEmpty(trip_tax_name)}">[[${trip_tax_name}]]</span><span 
+					class="percent">[[${#numbers.formatDecimal(trip_tax_rate,1,'COMMA',1,'POINT')}]]
+                    %</span><span class="tax">- [[${#numbers.formatDecimal(tax_trip_system_credit,1,'COMMA',2,'POINT')}]] €</span><span 
+					class="net-amount">- [[${#numbers.formatDecimal(net_trip_system_credit,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row" th:unless="${product_name} == '' or ${#strings.isEmpty(product_name)}"><span 
+                    th:text="${product_name =='PER_TRIP_WAIVER'} ? 'Trip Waiver' : ${product_name}"></span><span
+                    class="tax-name" th:unless="${product_tax_name} == '' or ${#strings.isEmpty(product_tax_name)}">[[${product_tax_name}]]</span><span 
+                    class="percent" th:unless="${product_tax_rate} == '0' or ${#strings.isEmpty(product_tax_rate)}">[[${product_tax_rate}]] %</span><span 
+                    class="tax">[[${product_tax_amount}]] €</span><span class="net-amount">[[${product_with_tax}]] €</span>
+                </div>
+                <div class="row" th:unless="${start_zone_fee} == '0' or ${#strings.isEmpty(start_zone_fee)}">Tassa iniziale<span 
+					class="tax-name">[[${start_zone_fee_tax_name}]]</span><span 
+					class="percent">[[${#numbers.formatDecimal(start_zone_fee_tax_rate,1,'COMMA',1,'POINT')}]]
+                    %</span><span class="tax">[[${#numbers.formatDecimal(start_zone_fee_tax_amount,1,'COMMA',2,'POINT')}]] €</span><span 
+					class="net-amount">[[${#numbers.formatDecimal(start_zone_fee,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row" th:unless="${end_zone_fee} == '0' or ${#strings.isEmpty(end_zone_fee)}">Tassa Finale<span 
+					class="tax-name">[[${end_zone_fee_tax_name}]]</span><span 
+					class="percent">[[${#numbers.formatDecimal(end_zone_fee_tax_rate,1,'COMMA',1,'POINT')}]]
+                    %</span><span class="tax">[[${#numbers.formatDecimal(end_zone_fee_tax_amount,1,'COMMA',2,'POINT')}]] €</span><span 
+					class="net-amount">[[${#numbers.formatDecimal(end_zone_fee,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row" th:unless="${cancellation_fee} == '0' or ${#strings.isEmpty(cancellation_fee)}">Tassa di cancellazione<span 
+					class="tax-name">[[${cancellation_fee_tax_name}]]</span><span 
+					class="percent">[[${#numbers.formatDecimal(cancellation_fee_tax_rate,1,'COMMA',1,'POINT')}]]
+                    %</span><span class="tax">[[${#numbers.formatDecimal(cancellation_fee_tax_amount,1,'COMMA',2,'POINT')}]] €</span><span 
+					class="net-amount">[[${#numbers.formatDecimal(cancellation_fee,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row" th:unless="${schedule_trip_fee} == '0' or ${#strings.isEmpty(schedule_trip_fee)}">Costo programazione del viaggio<span 
+					class="tax-name">[[${schedule_trip_fee_tax_name}]]</span><span 
+					class="percent">[[${#numbers.formatDecimal(schedule_trip_fee_tax_rate,1,'COMMA',1,'POINT')}]]
+                    %</span><span class="tax">[[${#numbers.formatDecimal(schedule_trip_fee_tax_amount,1,'COMMA',2,'POINT')}]] €</span><span 
+					class="net-amount">[[${#numbers.formatDecimal(schedule_trip_fee,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row" th:unless="${promo_code_reference} == '' or ${#strings.isEmpty(promo_code_reference)}">[[${promo_code_reference}]]<span 
+					class="net-amount">- [[${#numbers.formatDecimal(promo_code_value,1,'COMMA',2,'POINT')}]] €</span></div>
+                <div class="separator"></div>
+                <div class="row bold">Totale escluse tasse<span class="net-amount">[[${#numbers.formatDecimal(total_without_tax,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row bold" th:each="instance : ${taxes_per_rate}">[[${#strings.replace(instance.key, ',', '.')}]]<span 
+					class="net-amount">[[${#numbers.formatDecimal(instance.value.taxAmount,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="footer">Totale incluso tasse<span class="net-amount">[[${#numbers.formatDecimal(total_with_tax,1,'COMMA',2,'POINT')}]] €</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer">Fatturad  : [[${invoice_id}]]</div>
+    <div id="footer-right">&nbsp;</div>
+</body>
+
+</html>
