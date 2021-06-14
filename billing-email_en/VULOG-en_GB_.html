@@ -1,0 +1,445 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Vulog Invoice</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style>
+        /*
+            CSS for PAGE
+        */
+        @page {
+            size: A4;
+            margin: 15mm 15mm 10mm 15mm;
+
+            @bottom-left {
+                content: element(footer);
+            }
+
+            @bottom-right {
+                content: element(footerR);
+            }
+        }
+
+        @font-face {
+            font-family: "Vulog";
+            src: url(https://mobile-asset-resources.vulog.center/ALL/MyriadPro-Cond.ttf);
+            font-weight: normal;
+            font-style: normal;
+            -fs-pdf-font-embed: embed;
+            -fs-pdf-font-encoding: Identity-H;
+        }
+
+        @font-face {
+            font-family: "Vulog";
+            src: url(https://mobile-asset-resources.vulog.center/ALL/MyriadPro-Bold.ttf);
+            font-weight: bold;
+            font-style: normal;
+            -fs-pdf-font-embed: embed;
+            -fs-pdf-font-encoding: Identity-H;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: Vulog;
+            color: #5c5c5c;
+        }
+
+        #header,
+        #customer,
+        .trip>.detail {
+            position: relative;
+        }
+
+        #header>div,
+        #customer>div,
+        .trip>.detail>div {
+            vertical-align: top;
+            font-size: 7pt;
+        }
+
+        #logo,
+        #customer-info,
+        .trip>.detail>.trip-detail {
+            width: 78mm;
+        }
+
+        #logo img {
+            width: 50mm;
+        }
+
+        #header {
+            height: 42mm;
+        }
+
+        #info1 {
+            width: 50mm;
+            line-height: 150%;
+            position: absolute;
+            right: 50mm;
+            top: 0;
+        }
+
+        #info2 {
+            width: 50mm;
+            line-height: 150%;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+        #customer {
+            height: 54mm;
+        }
+
+        #customer-info,
+        .trip>.detail>.trip-detail {
+            padding-right: 5mm;
+        }
+
+        #customer-intro,
+        .trip>.detail>.invoice-detail {
+            width: 100mm;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+        #customer-intro {
+            top: -8px;
+        }
+
+        #customer-info .header,
+        #customer-intro .header {
+            background-color: #999999;
+            height: 1px;
+            margin-top: 8px;
+            margin-bottom: 14pt;
+        }
+
+        #customer-info .header>span,
+        #customer-intro .header>span {
+            background-color: #ffffff;
+            font-size: 10pt;
+            position: relative;
+            top: -8px;
+            padding-right: 2mm;
+        }
+
+        #customer-intro .header>span {
+            top: -4px;
+        }
+
+        #customer-info .info {
+            font-size: 8pt;
+            line-height: 150%;
+        }
+
+        #customer-intro .intro {
+            font-size: 18pt;
+        }
+
+        .driver {
+            padding: 0 0 4mm 2mm;
+            font-size: 8pt;
+            border-bottom: 1px solid #999999;
+            margin-bottom: 11pt;
+            width: 179mm;
+        }
+
+        .trip .detail .header {
+            padding: 1.5mm 2mm 1.5mm 2mm;
+            background-color: #f0f0f0;
+            font-size: 8pt;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .trip .detail .content {
+            padding: 1.5mm 2mm 1.5mm 2mm;
+            font-size: 0.1mm;
+        }
+
+        .trip .detail .trip-detail .header span {
+            position: absolute;
+            left: 34mm;
+        }
+
+        .trip .detail .content .destination {
+            width: 32mm;
+        }
+
+        .trip .detail .content>div {
+            font-size: 8pt;
+            vertical-align: top;
+            display: inline-block;
+        }
+
+        .trip .detail .content .destination {
+            padding-right: 2mm;
+        }
+
+        .trip .detail .destination .title {
+            font-weight: bold;
+            text-decoration: underline;
+            display: inline-block;
+            padding-bottom: 2.5mm;
+        }
+
+        .trip .detail .destination>div {
+            margin-bottom: 2.5mm;
+        }
+
+        .trip .detail .detailed {
+            width: 38mm;
+        }
+
+        .trip .detail .detailed .row {
+            font-weight: bold;
+            margin-bottom: 3mm;
+        }
+
+        .trip .detail .detailed .row>span {
+            font-weight: normal;
+            float: right;
+        }
+
+        .trip .invoice-detail .right {
+            float: right;
+        }
+
+        .trip .invoice-detail .net-amount {
+            display: inline-block;
+            text-align: right;
+            width: 18mm;
+            position: absolute;
+            right: 0;
+        }
+
+        .trip .invoice-detail .header .net-amount,
+        .trip .invoice-detail .footer .net-amount {
+            right: 2mm;
+        }
+
+        .trip .invoice-detail .tax {
+            display: inline-block;
+            text-align: right;
+            width: 18mm;
+            position: absolute;
+            right: 19mm;
+        }
+
+        .trip .invoice-detail .header .tax {
+            right: 22mm;
+        }
+
+        .trip .invoice-detail .percent {
+            display: inline-block;
+            text-align: right;
+            width: 11mm;
+            position: absolute;
+            right: 38mm;
+        }
+
+        .trip .invoice-detail .tax-name {
+            display: inline-block;
+            width: 18mm;
+            position: absolute;
+            right: 50mm;
+        }
+
+        .trip .invoice-detail .row {
+            font-size: 8pt;
+            margin: 2.5mm 2mm 2.5mm 2mm;
+            position: relative;
+        }
+
+        .separator {
+            height: 1px;
+            background-color: #999999;
+            margin: 5mm 0;
+        }
+
+        .trip .invoice-detail .row.bold {
+            font-weight: bold;
+        }
+
+        .invoice-detail .footer {
+            background-color: #4a4a4a;
+            color: #fff;
+            font-weight: bold;
+            padding: 1.5mm 2mm 1.5mm 2mm;
+            font-size: 9pt;
+            position: relative;
+        }
+
+        .footer span {
+            color: #fff;
+            top: 1.5mm;
+        }
+
+        #footer {
+            font-family: Vulog;
+            font-size: 6pt;
+            color: #5c5c5c;
+            position: running(footer);
+        }
+
+        #page {
+            font-family: Vulog;
+            font-size: 6pt;
+            color: #5c5c5c;
+        }
+
+        #number-page {
+            font-family: Vulog;
+            font-size: 6pt;
+            color: #5c5c5c;
+        }
+
+        #footer-right {
+            font-family: Vulog;
+            font-size: 6pt;
+            color: #5c5c5c;
+            position: running(footerR);
+        }
+    </style>
+</head>
+
+<body th:inline="text">
+    <div id="header">
+        <div id="logo">
+            <img
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAABdCAMAAAAoqquXAAABIFBMVEVHcExPptI4mcxnsdkokshostgrk8mczeaAvt5+vd4okshNpNEoksgokshcrNUrk8k2mswpkshMpNFOpdIpksgrk8kpksg3mcwqk8hIotA/nc5OpdI8nM0qk8k8nM0oksgulco+nc4pkshJotFCn887m80yl8o2mcw9nM0zl8sslMk9nc4tlckzl8sulcovlcoqk8k5m80slMkxl8s8nM03mcwxlspHodA3mcwwlspAns4vlcoyl8svlcotlMk0mMsslMkvlcoyl8s1mMsxlsoslMkqk8kqk8k2mcwoksgqk8l8vd4yl8stlMkpkskxlsookshPpdIqk8gxlspgrtYulcpFoNA8m81YqtVAns9FoNA1mMtKo9FAns4pksgoksgo0S6dAAAAXnRSTlMACE8O/QXBAQID+Rj89wrkd/URDe/W7EngIC4UPd046a0o8hskVYdeQm6xMbZVj6Xacb6LRmqdK1nJNaGCqMR+6pp6YpbO08tlz8gSkbqpdLgx57A100uEJXuKcl+S7/cHQgAAE35JREFUeNrsXHlX4sgWJzEhCwEM+77LLiKIOgg6gKJta9OD47x+45vk+3+LRwBCblUlxG5457xzcv/rLqpy65e7LtHl+j8iqvrSFpnsWyXpcmgHJQdzVVmQKtcbnAOHJQVfvMqamMe8g4cVcXRB0UltUQ4iVoJVVwzkbziIWNAffiNY0tixWhZ07TWCpXxjHUjM6YMBYH13jJYFHasArE7QgcQ2WO4jBxIHLAcsBywHLAcsBywHEgcsBywHLAcsBywHLAeSPYHFCeyChM8WCDlu5w4hWYr7DL/yxRMEyh8RD+J88au8h7U8Pn8Fzl/vKgUEM54Xqz++Cj8JFpvs071//XN5ef937TQVp+whxh9dXZxOer0KnSrC27Ce7QX5q+5v6XCd9m2gOqm3/QRKd2oe/Fqep/q7P/Y46pvBxTZenmP+cL0SMOyKHzff/enbF+Iurtira6stuGoPLCr/dPb4u8isemaqGArnzhs7NZZLVrudmCwxqiqJoYfhpKQ/+uhk+LC44E1VKzby9BdJOzhSXt0mUI4oJiTnSuhDUq/yqjeV7vmIbPh6aWm9We/1CfSDuNoVGwdwQYy6VwVkKTZOfg4sLnk6SntR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" />
+        </div>
+        <div id="info1">
+            <strong>Contact</strong><br />
+            21 Avenue Simone Veil, 06200, Nice<br />
+            04 93 52 15 77
+        </div>
+        <div id="info2">
+            <strong>Information</strong><br />
+            Some optional information here...
+        </div>
+    </div>
+
+    <div id="customer">
+        <div id="customer-info">
+            <div class="header"><span><strong>Date : </strong><th:block th:with="sdf = ${new java.text.SimpleDateFormat('dd/MM/yy')}">[[${#dates.format(sdf.parse(invoice_invoiceDate), 'MM/dd/YYYY')}]]</th:block></span></div>
+            <div class="info">
+                <strong>Account : </strong>[[${user_name}]]<br />
+                <strong>Name : </strong>[[${user_full_name}]]<br />
+                <strong>Email : </strong>[[${user_email}]]<br />
+                <strong>Address : </strong>[[${billing_address}]]<br />
+            </div>
+        </div>
+        <div id="customer-intro">
+            <div class="header"><span><strong>Invoice : </strong>[[${invoice_id}]]</span></div>
+            <div class="intro">
+                <strong>Hello [[${user_first_name}]],</strong> thank you for using Vulog services for your trip.
+            </div>
+        </div>
+    </div>
+
+    <div class="trip">
+        <div class="driver">
+        </div>
+        <div class="detail">
+            <div class="trip-detail" th:if="${invoice_type} == 'trip'">
+                <div class="header">Dates<span>Trip details</span></div>
+                <div class="content">
+                    <div class="destination">
+                        <div class="from"><span class="title">From
+                                :</span><br />[[${trip_start_address}]]<br /><th:block 
+                                th:with="sdf = ${new java.text.SimpleDateFormat('dd/MM/yy HH:mm')}">[[${#dates.format(sdf.parse(trip_start_date), 'MM/dd/YYYY hh:mm a')}]]</th:block></div>
+                        <div class="to"><span class="title">To
+                                :</span><br />[[${trip_end_address}]]<br /><th:block 
+                                th:with="sdf = ${new java.text.SimpleDateFormat('dd/MM/yy HH:mm')}">[[${#dates.format(sdf.parse(trip_end_date), 'MM/dd/YYYY hh:mm a')}]]</th:block></div>
+                    </div>
+                    <div class="detailed">
+                        <div class="row"><span>[[${trip_distance}]] km</span>Distance driven</div>
+                        <div class="row"><span>[[${trip_duration}]] min</span>Trip duration</div>
+                        <div class="row"><span>[[${trip_driving_duration}]] min</span>Driving duration</div>
+                        <div class="row"><span>[[${trip_pause_duration}]] min</span>Pause duration</div>
+                        <div class="row"><span>[[${trip_booking_duration}]] min</span>Booking duration</div>
+                    </div>
+                </div>
+            </div>
+            <div class="invoice-detail" th:style="${invoice_type} == 'trip' ? '' : 'width:179mm'">
+                <div class="header">Invoice
+                    Statement<span class="tax">Tax</span><span class="net-amount">Excl tax</span></div>
+                <div class="row" th:if="${invoice_type} == 'trip'">Trip
+                    Cost<span class="tax-name" th:unless="${trip_tax_name} == '' or ${#strings.isEmpty(trip_tax_name)}">[[${trip_tax_name}]]</span><span 
+					class="percent">[[${#numbers.formatDecimal(trip_tax_rate,1,'COMMA',1,'POINT')}]]
+                    %</span><span class="tax">[[${#numbers.formatDecimal(trip_total_tax,1,'COMMA',2,'POINT')}]] €</span><span
+                    class="net-amount">[[${#numbers.formatDecimal(trip_total_without_tax,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row" th:unless="${billing_group_net_discount} == '0' or ${#strings.isEmpty(billing_group_net_discount)}">[[${billing_group_name}]] 
+					(- [[${#numbers.formatDecimal(billing_group_discount,1,'COMMA',1,'POINT')}]] %)<span 
+					class="tax">- [[${#numbers.formatDecimal(billing_group_tax_discount,1,'COMMA',2,'POINT')}]] €</span><span 
+					class="net-amount">- [[${#numbers.formatDecimal(billing_group_net_discount,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row" th:unless="${without_tax_unlock_fee} == '0' or ${#strings.isEmpty(without_tax_unlock_fee)}">Unlock fee<span 
+					class="tax-name" th:unless="${trip_tax_name} == '' or ${#strings.isEmpty(trip_tax_name)}">[[${trip_tax_name}]]</span><span 
+					class="percent">[[${#numbers.formatDecimal(trip_tax_rate,1,'COMMA',1,'POINT')}]]
+                    %</span><span class="tax">[[${#numbers.formatDecimal(tax_unlock_fee,1,'COMMA',2,'POINT')}]] €</span><span 
+					class="net-amount">[[${#numbers.formatDecimal(without_tax_unlock_fee,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row" th:unless="${trip_system_credit} == '0' or ${#strings.isEmpty(trip_system_credit)}">System credits<span 
+					class="tax-name" th:unless="${trip_tax_name} == '' or ${#strings.isEmpty(trip_tax_name)}">[[${trip_tax_name}]]</span><span 
+					class="percent">[[${#numbers.formatDecimal(trip_tax_rate,1,'COMMA',1,'POINT')}]]
+                    %</span><span class="tax">- [[${#numbers.formatDecimal(tax_trip_system_credit,1,'COMMA',2,'POINT')}]] €</span><span 
+					class="net-amount">- [[${#numbers.formatDecimal(net_trip_system_credit,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row" th:unless="${product_name} == '' or ${#strings.isEmpty(product_name)}"><span 
+                    th:text="${product_name =='PER_TRIP_WAIVER'} ? 'Trip Waiver' : ${product_name}"></span><span
+                    class="tax-name" th:unless="${product_tax_name} == '' or ${#strings.isEmpty(product_tax_name)}">[[${product_tax_name}]]</span><span 
+                    class="percent" th:unless="${product_tax_rate} == '0' or ${#strings.isEmpty(product_tax_rate)}">[[${product_tax_rate}]] %</span><span 
+                    class="tax">[[${product_tax_amount}]] €</span><span class="net-amount">[[${product_with_tax}]] €</span>
+                </div>
+                <div class="row" th:unless="${start_zone_fee} == '0' or ${#strings.isEmpty(start_zone_fee)}">Start zone fee<span 
+					class="tax-name">[[${start_zone_fee_tax_name}]]</span><span 
+					class="percent">[[${#numbers.formatDecimal(start_zone_fee_tax_rate,1,'COMMA',1,'POINT')}]]
+                    %</span><span class="tax">[[${#numbers.formatDecimal(start_zone_fee_tax_amount,1,'COMMA',2,'POINT')}]] €</span><span 
+					class="net-amount">[[${#numbers.formatDecimal(start_zone_fee,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row" th:unless="${end_zone_fee} == '0' or ${#strings.isEmpty(end_zone_fee)}">End zone fee<span 
+					class="tax-name">[[${end_zone_fee_tax_name}]]</span><span 
+					class="percent">[[${#numbers.formatDecimal(end_zone_fee_tax_rate,1,'COMMA',1,'POINT')}]]
+                    %</span><span class="tax">[[${#numbers.formatDecimal(end_zone_fee_tax_amount,1,'COMMA',2,'POINT')}]] €</span><span 
+					class="net-amount">[[${#numbers.formatDecimal(end_zone_fee,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row" th:unless="${cancellation_fee} == '0' or ${#strings.isEmpty(cancellation_fee)}">Cancellation fee<span 
+					class="tax-name">[[${cancellation_fee_tax_name}]]</span><span 
+					class="percent">[[${#numbers.formatDecimal(cancellation_fee_tax_rate,1,'COMMA',1,'POINT')}]]
+                    %</span><span class="tax">[[${#numbers.formatDecimal(cancellation_fee_tax_amount,1,'COMMA',2,'POINT')}]] €</span><span 
+					class="net-amount">[[${#numbers.formatDecimal(cancellation_fee,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row" th:unless="${schedule_trip_fee} == '0' or ${#strings.isEmpty(schedule_trip_fee)}">Schedule trip fee<span 
+					class="tax-name">[[${schedule_trip_fee_tax_name}]]</span><span 
+					class="percent">[[${#numbers.formatDecimal(schedule_trip_fee_tax_rate,1,'COMMA',1,'POINT')}]]
+                    %</span><span class="tax">[[${#numbers.formatDecimal(schedule_trip_fee_tax_amount,1,'COMMA',2,'POINT')}]] €</span><span 
+					class="net-amount">[[${#numbers.formatDecimal(schedule_trip_fee,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row" th:unless="${promo_code_reference} == '' or ${#strings.isEmpty(promo_code_reference)}">[[${promo_code_reference}]]<span 
+					class="net-amount">- [[${#numbers.formatDecimal(promo_code_value,1,'COMMA',2,'POINT')}]] €</span></div>
+                <div class="separator"></div>
+                <div class="row bold">Total excl tax<span class="net-amount">[[${#numbers.formatDecimal(total_without_tax,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="row bold" th:each="instance : ${taxes_per_rate}">[[${#strings.replace(instance.key, ',', '.')}]]<span 
+					class="net-amount">[[${#numbers.formatDecimal(instance.value.taxAmount,1,'COMMA',2,'POINT')}]] €</span>
+                </div>
+                <div class="footer">Total incl tax<span class="net-amount">[[${#numbers.formatDecimal(total_with_tax,1,'COMMA',2,'POINT')}]] €</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer">Invoice : [[${invoice_id}]]</div>
+    <div id="footer-right">&nbsp;</div>
+</body>
+
+</html>
